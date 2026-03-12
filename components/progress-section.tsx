@@ -50,20 +50,20 @@ export function ProgressSection() {
               </div>
 
               {/* Amount Display */}
-              <div className="grid grid-cols-2 gap-6">
-                <div className="text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="text-center sm:text-left">
                   <p className="text-sm text-muted-foreground mb-1">
                     Terkumpul
                   </p>
-                  <p className="text-2xl md:text-3xl font-bold text-primary">
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-primary break-words">
                     {formatCurrency(collectedAmount)}
                   </p>
                 </div>
-                <div className="text-center">
+                <div className="text-center sm:text-right">
                   <p className="text-sm text-muted-foreground mb-1">
                     Target Dana
                   </p>
-                  <p className="text-2xl md:text-3xl font-bold text-foreground">
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground break-words">
                     {formatCurrency(targetAmount)}
                   </p>
                 </div>
@@ -74,7 +74,7 @@ export function ProgressSection() {
                 <p className="text-sm text-muted-foreground mb-1">
                   Dana yang Dibutuhkan
                 </p>
-                <p className="text-2xl font-semibold text-primary">
+                <p className="text-xl md:text-2xl font-semibold text-primary">
                   {formatCurrency(targetAmount - collectedAmount)}
                 </p>
               </div>
