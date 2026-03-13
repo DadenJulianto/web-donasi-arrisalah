@@ -105,7 +105,7 @@ export function DonorListSection() {
                           {donor.nama}
                         </TableCell>
                         <TableCell className="text-right text-primary font-semibold py-4">
-                          {formatCurrency(donor.jumlah)}
+                          {formatCurrency(donor.jumlahDonasi)}
                         </TableCell>
                         <TableCell className="text-right text-muted-foreground py-4">
                           {formatDate(donor.tanggal)}

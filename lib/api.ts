@@ -1,4 +1,4 @@
-const SUBMIT_API_URL = 'https://script.google.com/macros/s/AKfycbxsGZKrRt7yJZdR_9D0k_r7TyxAc4f8u3i6bR856OVlhGw1QY19LyYOykjMFFu-yHOK/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxsGZKrRt7yJZdR_9D0k_r7TyxAc4f8u3i6bR856OVlhGw1QY19LyYOykjMFFu-yHOK/exec';
 
 export interface DonationData {
   nama: string;
@@ -12,7 +12,7 @@ export interface DonationData {
 
 export async function submitDonation(data: DonationData): Promise<boolean> {
   try {
-    const response = await fetch(SUBMIT_API_URL, {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8',
@@ -27,12 +27,10 @@ export async function submitDonation(data: DonationData): Promise<boolean> {
   }
 }
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbw7OEJ7XRwCy1wcvsxyLP96BCfJ2LjZ1XDXBB7FGstrpUmK8n-iKQfO4yrtRTAn7ZpV/exec';
-
 export interface Donor {
   tanggal: string;
   nama: string;
-  jumlah: number;
+  jumlahDonasi: number;
 }
 
 export interface DonationProgress {
@@ -52,7 +50,7 @@ export async function fetchDonors(): Promise<Donor[]> {
     if (!response.ok) throw new Error('Failed to fetch donor data');
     const data: Donor[] = await response.json();
     // Sort by highest donation
-    return data.sort((a, b) => b.jumlah - a.jumlah);
+    return data.sort((a, b) => b.jumlahDonasi - a.jumlahDonasi);
   } catch (error) {
     console.error('Error fetching donors:', error);
     return [];
