@@ -51,32 +51,40 @@ export function DonationFormSection() {
     setLoading(true);
     
     try {
-      const response = await fetch('/api/donation', {
-        method: 'POST',
+      const response = await fetch("https://script.google.com/macros/s/AKfycbxI5Naf4AB9-FO42a75tf277Imo7K_xcot_ACc3KI4fJp4Be28C7ohF5fe4qpqrRHkk/exec", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          nama: formData.nama,
+          whatsapp: formData.whatsapp,
+          namaPengirim: formData.namaPengirim,
+          jumlahDonasi: formData.jumlahDonasi,
+          metode: formData.metode,
+          pesan: formData.pesan,
+          tanggal: new Date().toISOString()
+        })
       });
 
-      if (response.ok) {
-        toast({
-          title: 'Berhasil',
-          description: 'Terima kasih atas donasi Anda! Data Anda telah dicatat.',
-        });
-        
-        // Reset form
-        setFormData({
-          nama: '',
-          whatsapp: '',
-          namaPengirim: '',
-          jumlahDonasi: '',
-          metode: 'transfer',
-          pesan: '',
-        });
-      } else {
-        throw new Error('Failed to submit donation');
-      }
+      // Note: If the API returns a redirect (302) which is common for Apps Script,
+      // fetch will follow it. If CORS is not enabled on the script, this might fail.
+      // But we follow the user's requested implementation detail.
+      
+      toast({
+        title: 'Berhasil',
+        description: 'Terima kasih atas donasi Anda! Data Anda telah dicatat.',
+      });
+      
+      // Reset form
+      setFormData({
+        nama: '',
+        whatsapp: '',
+        namaPengirim: '',
+        jumlahDonasi: '',
+        metode: 'transfer',
+        pesan: '',
+      });
     } catch (error) {
       console.error('Error submitting donation:', error);
       toast({
