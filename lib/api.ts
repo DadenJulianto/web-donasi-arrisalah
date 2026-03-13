@@ -1,4 +1,4 @@
-const SUBMIT_API_URL = 'https://script.google.com/macros/s/AKfycbxI5Naf4AB9-FO42a75tf277Imo7K_xcot_ACc3KI4fJp4Be28C7ohF5fe4qpqrRHkk/exec';
+const SUBMIT_API_URL = 'https://script.google.com/macros/s/AKfycbxsGZKrRt7yJZdR_9D0k_r7TyxAc4f8u3i6bR856OVlhGw1QY19LyYOykjMFFu-yHOK/exec';
 
 export interface DonationData {
   nama: string;
@@ -15,14 +15,11 @@ export async function submitDonation(data: DonationData): Promise<boolean> {
     const response = await fetch(SUBMIT_API_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain;charset=utf-8',
       },
       body: JSON.stringify(data),
-      mode: 'no-cors', // Apps Script often requires no-cors for simple POSTs if not handling OPTIONS
+      mode: 'no-cors',
     });
-    // Note: with no-cors, we can't see the response body or status easily, 
-    // but the request is sent. However, standard Apps Script setups usually work better with default fetch if CORS is handled.
-    // The user's example didn't use no-cors, so I'll follow their example first but be aware of possible CORS issues.
     return true; 
   } catch (error) {
     console.error('Error submitting donation:', error);

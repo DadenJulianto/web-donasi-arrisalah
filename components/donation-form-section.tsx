@@ -51,10 +51,10 @@ export function DonationFormSection() {
     setLoading(true);
     
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbxI5Naf4AB9-FO42a75tf277Imo7K_xcot_ACc3KI4fJp4Be28C7ohF5fe4qpqrRHkk/exec", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbxsGZKrRt7yJZdR_9D0k_r7TyxAc4f8u3i6bR856OVlhGw1QY19LyYOykjMFFu-yHOK/exec", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain;charset=utf-8",
         },
         body: JSON.stringify({
           nama: formData.nama,
@@ -64,13 +64,12 @@ export function DonationFormSection() {
           metode: formData.metode,
           pesan: formData.pesan,
           tanggal: new Date().toISOString()
-        })
+        }),
+        mode: 'no-cors' // Google Apps Script requires no-cors when redirecting if CORS is not explicitly handled
       });
 
-      // Note: If the API returns a redirect (302) which is common for Apps Script,
-      // fetch will follow it. If CORS is not enabled on the script, this might fail.
-      // But we follow the user's requested implementation detail.
-      
+      // When using 'no-cors', the response status is 0 and we can't read the body.
+      // We assume success if the fetch completes without throwing an error.
       toast({
         title: 'Berhasil',
         description: 'Terima kasih atas donasi Anda! Data Anda telah dicatat.',
