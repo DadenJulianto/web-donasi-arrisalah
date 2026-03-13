@@ -54,30 +54,29 @@ export async function fetchDonors(): Promise<Donor[]> {
     if (!response.ok) throw new Error('Failed to fetch donor data');
     const data: any[] = await response.json();
     
-    // The API field mapping is inconsistent (swapped in some rows, not in others).
-    // We use a heuristic: donation amounts are usually < 1 Billion, 
-    // while WhatsApp/Phone numbers are > 1 Billion (e.g. 0812... or 6281...).
     const mappedData: Donor[] = data.map(item => {
-      const valA = Number(item.jumlahDonasi) || 0;
-      const valB = Number(item.namaPengirim) || 0;
+      // With aligned columns, the data should now be correct in their fields.
+      // But we keep a check just in case of legacy mismatched data in the sheet.
+      const valAmount = Number(item.jumlahDonasi) || 0;
+      const valAlt = Number(item.namaPengirim) || 0;
       
-      let actualAmount = valA;
-      // If valA looks like a phone number and valB looks like a donation, swap them.
-      if (valA > 1000000000 && valB > 0 && valB < 1000000000) {
-        actualAmount = valB;
-      } else if (valA === 0 && valB > 0) {
-        actualAmount = valB;
+      let actualAmount = valAmount;
+      // Safety check: if jumlahDonasi looks like a phone number and namaPengirim looks like the amount
+      if (valAmount > 1000000000 && valAlt > 0 && valAlt < 1000000000) {
+        actualAmount = valAlt;
       }
 
       return {
         tanggal: item.tanggal,
-        nama: (item.nama || 'Donatur').trim(),
+        nama: (item.nama || 'Donatur').trim() || 'Hamba Allah',
         jumlahDonasi: actualAmount,
       };
     });
 
-    // Sort by highest donation
-    return mappedData.sort((a, b) => b.jumlahDonasi - a.jumlahDonasi);
+    // Sort by Date Descending (Newest First)
+    return mappedData.sort((a, b) => {
+      return new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime();
+    });
   } catch (error) {
     console.error('Error fetching donors:', error);
     return [];

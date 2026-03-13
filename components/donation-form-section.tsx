@@ -57,13 +57,13 @@ export function DonationFormSection() {
           "Content-Type": "text/plain;charset=utf-8",
         },
         body: JSON.stringify({
+          tanggal: new Date().toISOString(),
           nama: formData.nama,
-          whatsapp: formData.whatsapp,
+          jumlahDonasi: Number(formData.jumlahDonasi.replace(/\./g, '')),
+          whatsapp: formData.whatsapp.replace(/[^0-9]/g, ''),
           namaPengirim: formData.namaPengirim,
-          jumlahDonasi: Number(formData.jumlahDonasi),
-          metode: formData.metode,
           pesan: formData.pesan,
-          tanggal: new Date().toISOString()
+          metode: formData.metode
         }),
         mode: 'no-cors' // Google Apps Script requires no-cors when redirecting if CORS is not explicitly handled
       });
@@ -164,11 +164,15 @@ export function DonationFormSection() {
               </label>
               <div className="space-y-2">
                 <Input
-                  type="number"
+                  type="text"
                   name="jumlahDonasi"
-                  placeholder="100000"
+                  placeholder="Contoh: 100.000"
                   value={formData.jumlahDonasi}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    // Allow only numbers and dots
+                    const val = e.target.value.replace(/[^0-9.]/g, '');
+                    handleInputChange({ ...e, target: { ...e.target, name: 'jumlahDonasi', value: val } } as any);
+                  }}
                   className="w-full text-lg font-semibold"
                   required
                 />
@@ -178,7 +182,7 @@ export function DonationFormSection() {
                       style: 'currency',
                       currency: 'IDR',
                       minimumFractionDigits: 0,
-                    }).format(Number(formData.jumlahDonasi))}
+                    }).format(Number(formData.jumlahDonasi.replace(/\./g, '')))}
                   </p>
                 )}
               </div>
