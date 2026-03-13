@@ -55,20 +55,29 @@ export async function fetchDonors(): Promise<Donor[]> {
     const data: any[] = await response.json();
     
     const mappedData: Donor[] = data.map(item => {
-      // With aligned columns, the data should now be correct in their fields.
-      // But we keep a check just in case of legacy mismatched data in the sheet.
-      const valAmount = Number(item.jumlahDonasi) || 0;
-      const valAlt = Number(item.namaPengirim) || 0;
+      // Normalize keys to handle trailing spaces or typos from Google Sheets headers
+      const normalized: any = {};
+      Object.keys(item).forEach(key => {
+        normalized[key.trim()] = item[key];
+      });
+
+      // Handle the amount with priority on trimmed 'jumlahDonasi'
+      // Also handle the specific case found: "jumlahDonasi " (with trailing space)
+      const rawAmount = normalized.jumlahDonasi;
+      
+      const valAmount = Number(rawAmount) || 0;
+      const valAlt = Number(normalized.namaPengirim) || 0;
       
       let actualAmount = valAmount;
       // Safety check: if jumlahDonasi looks like a phone number and namaPengirim looks like the amount
+      // (This was likely an old workaround for misaligned columns)
       if (valAmount > 1000000000 && valAlt > 0 && valAlt < 1000000000) {
         actualAmount = valAlt;
       }
 
       return {
-        tanggal: item.tanggal,
-        nama: (item.nama || 'Donatur').trim() || 'Hamba Allah',
+        tanggal: normalized.tanggal || '',
+        nama: (normalized.nama || 'Donatur').trim() || 'Hamba Allah',
         jumlahDonasi: actualAmount,
       };
     });
