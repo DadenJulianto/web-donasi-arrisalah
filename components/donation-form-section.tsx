@@ -60,7 +60,7 @@ export function DonationFormSection() {
           nama: formData.nama,
           whatsapp: formData.whatsapp,
           namaPengirim: formData.namaPengirim,
-          jumlahDonasi: formData.jumlahDonasi,
+          jumlahDonasi: Number(formData.jumlahDonasi),
           metode: formData.metode,
           pesan: formData.pesan,
           tanggal: new Date().toISOString()

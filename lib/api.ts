@@ -17,7 +17,11 @@ export async function submitDonation(data: DonationData): Promise<boolean> {
       headers: {
         'Content-Type': 'text/plain;charset=utf-8',
       },
-      body: JSON.stringify(data),
+      // Ensure jumlahDonasi is strictly a number for the backend
+      body: JSON.stringify({
+        ...data,
+        jumlahDonasi: Number(data.jumlahDonasi)
+      }),
       mode: 'no-cors',
     });
     return true; 
@@ -50,15 +54,27 @@ export async function fetchDonors(): Promise<Donor[]> {
     if (!response.ok) throw new Error('Failed to fetch donor data');
     const data: any[] = await response.json();
     
-    // The API is currently returning swapped fields:
-    // "jumlahDonasi" contains the WhatsApp number
-    // "namaPengirim" contains the actual amount
-    const mappedData: Donor[] = data.map(item => ({
-      tanggal: item.tanggal,
-      nama: item.nama,
-      // Map correctly from the swapped API fields
-      jumlahDonasi: Number(item.namaPengirim) || 0,
-    }));
+    // The API field mapping is inconsistent (swapped in some rows, not in others).
+    // We use a heuristic: donation amounts are usually < 1 Billion, 
+    // while WhatsApp/Phone numbers are > 1 Billion (e.g. 0812... or 6281...).
+    const mappedData: Donor[] = data.map(item => {
+      const valA = Number(item.jumlahDonasi) || 0;
+      const valB = Number(item.namaPengirim) || 0;
+      
+      let actualAmount = valA;
+      // If valA looks like a phone number and valB looks like a donation, swap them.
+      if (valA > 1000000000 && valB > 0 && valB < 1000000000) {
+        actualAmount = valB;
+      } else if (valA === 0 && valB > 0) {
+        actualAmount = valB;
+      }
+
+      return {
+        tanggal: item.tanggal,
+        nama: (item.nama || 'Donatur').trim(),
+        jumlahDonasi: actualAmount,
+      };
+    });
 
     // Sort by highest donation
     return mappedData.sort((a, b) => b.jumlahDonasi - a.jumlahDonasi);
