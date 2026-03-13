@@ -162,15 +162,26 @@ export function DonationFormSection() {
               <label className="block text-sm font-semibold text-foreground mb-2">
                 Jumlah Donasi (Rp) <span className="text-destructive">*</span>
               </label>
-              <Input
-                type="number"
-                name="jumlahDonasi"
-                placeholder="100000"
-                value={formData.jumlahDonasi}
-                onChange={handleInputChange}
-                className="w-full"
-                required
-              />
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  name="jumlahDonasi"
+                  placeholder="100000"
+                  value={formData.jumlahDonasi}
+                  onChange={handleInputChange}
+                  className="w-full text-lg font-semibold"
+                  required
+                />
+                {formData.jumlahDonasi && (
+                  <p className="text-sm font-medium text-primary bg-primary/5 px-3 py-1.5 rounded-md border border-primary/10 inline-block">
+                    Terbilang: {new Intl.NumberFormat('id-ID', {
+                      style: 'currency',
+                      currency: 'IDR',
+                      minimumFractionDigits: 0,
+                    }).format(Number(formData.jumlahDonasi))}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Metode Donasi */}
