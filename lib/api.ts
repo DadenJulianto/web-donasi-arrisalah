@@ -48,9 +48,20 @@ export async function fetchDonors(): Promise<Donor[]> {
   try {
     const response = await fetch(`${API_URL}?sheet=donatur`);
     if (!response.ok) throw new Error('Failed to fetch donor data');
-    const data: Donor[] = await response.json();
+    const data: any[] = await response.json();
+    
+    // The API is currently returning swapped fields:
+    // "jumlahDonasi" contains the WhatsApp number
+    // "namaPengirim" contains the actual amount
+    const mappedData: Donor[] = data.map(item => ({
+      tanggal: item.tanggal,
+      nama: item.nama,
+      // Map correctly from the swapped API fields
+      jumlahDonasi: Number(item.namaPengirim) || 0,
+    }));
+
     // Sort by highest donation
-    return data.sort((a, b) => b.jumlahDonasi - a.jumlahDonasi);
+    return mappedData.sort((a, b) => b.jumlahDonasi - a.jumlahDonasi);
   } catch (error) {
     console.error('Error fetching donors:', error);
     return [];
