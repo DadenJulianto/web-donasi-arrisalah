@@ -194,12 +194,12 @@ export function DonationFormSection() {
                 Metode Donasi <span className="text-destructive">*</span>
               </label>
               <Select value={formData.metode} onValueChange={handleSelectChange}>
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih metode donasi" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="transfer">Transfer Bank</SelectItem>
-                  <SelectItem value="qris">QRIS</SelectItem>
+                  <SelectItem value="transfer">Transfer Bank (Bank Jatim)</SelectItem>
+                  <SelectItem value="qris">QRIS (Gopay, OVO, Dana, dll)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
