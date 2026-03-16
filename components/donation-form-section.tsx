@@ -8,6 +8,39 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
+function getTerbilang(angka: number): string {
+  if (angka === 0) return '';
+  const bilangan = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
+  
+  if (angka < 12) {
+    return bilangan[angka];
+  } else if (angka < 20) {
+    return getTerbilang(angka - 10) + ' Belas';
+  } else if (angka < 100) {
+    return getTerbilang(Math.floor(angka / 10)) + ' Puluh ' + getTerbilang(angka % 10);
+  } else if (angka < 200) {
+    return 'Seratus ' + getTerbilang(angka - 100);
+  } else if (angka < 1000) {
+    return getTerbilang(Math.floor(angka / 100)) + ' Ratus ' + getTerbilang(angka % 100);
+  } else if (angka < 2000) {
+    return 'Seribu ' + getTerbilang(angka - 1000);
+  } else if (angka < 1000000) {
+    return getTerbilang(Math.floor(angka / 1000)) + ' Ribu ' + getTerbilang(angka % 1000);
+  } else if (angka < 1000000000) {
+    return getTerbilang(Math.floor(angka / 1000000)) + ' Juta ' + getTerbilang(angka % 1000000);
+  } else if (angka < 1000000000000) {
+    return getTerbilang(Math.floor(angka / 1000000000)) + ' Miliar ' + getTerbilang(angka % 1000000000);
+  }
+  return '';
+}
+
+function formatTerbilang(angka: number): string {
+  if (!angka) return '';
+  const hasil = getTerbilang(Math.floor(angka)).trim().replace(/\s+/g, ' ');
+  return hasil ? hasil + ' Rupiah' : '';
+}
+
+
 export function DonationFormSection() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -169,20 +202,16 @@ export function DonationFormSection() {
                   placeholder="Contoh: 100.000"
                   value={formData.jumlahDonasi}
                   onChange={(e) => {
-                    // Allow only numbers and dots
-                    const val = e.target.value.replace(/[^0-9.]/g, '');
-                    handleInputChange({ ...e, target: { ...e.target, name: 'jumlahDonasi', value: val } } as any);
+                    const rawValue = e.target.value.replace(/[^0-9]/g, '');
+                    const formatted = rawValue ? new Intl.NumberFormat('id-ID').format(Number(rawValue)) : '';
+                    setFormData(prev => ({ ...prev, jumlahDonasi: formatted }));
                   }}
                   className="w-full text-lg font-semibold"
                   required
                 />
                 {formData.jumlahDonasi && (
                   <p className="text-sm font-medium text-primary bg-primary/5 px-3 py-1.5 rounded-md border border-primary/10 inline-block">
-                    Terbilang: {new Intl.NumberFormat('id-ID', {
-                      style: 'currency',
-                      currency: 'IDR',
-                      minimumFractionDigits: 0,
-                    }).format(Number(formData.jumlahDonasi.replace(/\./g, '')))}
+                    Terbilang: {formatTerbilang(Number(formData.jumlahDonasi.replace(/\./g, '')))}
                   </p>
                 )}
               </div>
